@@ -71,126 +71,125 @@ for k in range(N_train+N_val+N_test):
 
   # 1. Coil compression matrix with RoVir + AutoFOV.
   if not os.path.isfile("%s/ccm.npy" % (base)) and not os.path.isfile("%s/shifts.npy" % (base)):
-    os.system("docker run -v /:/mnt/:z setsompop/calib " + \
+    os.system("docker run --gpus all -v /:/mnt/:z setsompop/calib " + \
               ("--ksp /mnt/%s/raw_gre.npy " % (base))              + \
               ("--nse /mnt/%s/noise.npy " % (base))                + \
               ("--ccm /mnt/%s/ccm.npy " % (base))                  + \
               ("--shf /mnt/%s/shifts.npy " % (base))               + \
               ("--nrc %d --nsv %d" % (params.rc, params.nc)))
 
-  ## 2. Prepare reference k-space (6min for healthy volunteers and 2min for patients). - Apply coil compression and FOV shifting.
-  #if not os.path.isfile("%s/ksp_6min.npy" % (base)) and not isPatient:
-  #  os.system("docker run --gpus all -v /:/mnt/:z setsompop/recon -a " +     \
-  #            ("--trj /mnt/%s " % (trj["6min"])) +                          \
-  #            ("--ksp /mnt/%s/raw_mrf.npy " % (base)) +                     \
-  #            ("--res /mnt/%s/tmp.npy " % (base)) +                         \
-  #            ("--phi /mnt/%s " % (phi)) +                                  \
-  #            ("--ccm /mnt/%s/ccm.npy " % (base)) +                         \
-  #            ("--shf /mnt/%s/shifts.npy " % (base)) +                      \
-  #            ("--svk /mnt/%s/ksp_6min.npy " % (base)) +                    \
-  #            ("--mal %s " % (params.sens_alg)) +                      \
-  #            ("--mtx %d --ptt %d --dev %d " % \
-  #              (params.N, params.ptt, params.devnum)))
-#
-  #if not os.path.isfile("%s/ksp_2min.npy" % (base)) and isPatient:
-  #  os.system("docker run --gpus all -v /:/mnt/:z setsompop/recon -a " +     \
-  #            ("--trj /mnt/%s " % (trj["2min"])) +                          \
-  #            ("--ksp /mnt/%s/raw_mrf.npy " % (base)) +                     \
-  #            ("--res /mnt/%s/tmp.npy " % (base)) +                         \
-  #            ("--phi /mnt/%s " % (phi)) +                                  \
-  #            ("--ccm /mnt/%s/ccm.npy " % (base)) +                         \
-  #            ("--shf /mnt/%s/shifts.npy " % (base)) +                      \
-  #            ("--svk /mnt/%s/ksp_2min.npy " % (base)) +                    \
-  #            ("--mal %s " % (params.sens_alg)) +                      \
-  #            ("--mtx %d --ptt %d --dev %d " % \
-  #              (params.N, params.ptt, params.devnum)))
-#
-  #if os.path.isfile("%s/tmp.npy" % (base)):
-  #  os.system("rm -f %s/tmp.npy" % (base))
-#
-#
-  ## 3. Sub-sampling.
-  #if params.accel == "2min" and not os.path.isfile("%s/ksp_2min.npy" % (base)) and not isPatient:
-  #  ksp = np.load("%s/ksp_6min.npy" % (base), mmap_mode="r")
-#
-  #  ksp_a = ksp[:, :, 0:32:2, 0:500:2]
-  #  ksp_b = ksp[:, :, 1:32:2, 1:500:2]
-#
-  #  ksp = np.zeros(list(ksp_a.shape[:-1]) + [ksp.shape[-1]], dtype=ksp.dtype)
-  #  ksp[..., 0:500:2] = ksp_a
-  #  ksp[..., 1:500:2] = ksp_b
-#
-  #  np.save("%s/ksp_2min.npy" % (base), ksp)
-#
-  ## 4. Gridding reconstruction (2-min).
-  #recon = ("%s/init_adj_%s.npy" % (base, params.accel))
-  #if not os.path.isfile(recon):
-  #  print("~~~~~~~~> %s" % recon,flush=True)
-  #  os.system("docker run --gpus all  " + \
-  #            ("-v /:/mnt/:z setsompop/recon -a ") +                                \
-  #            ("--trj /mnt/%s " % (trj[params.accel])) +                           \
-  #            ("--ksp /mnt/%s/ksp_%s.npy " % (base, params.accel)) +               \
-  #            ("--dcf /mnt/%s/../data/shared/dcf_%s.npy " % (dst, params.accel)) +    \
-  #            ("--mps /mnt/%s/mps_%s.npy " % (base, params.accel)) +                           \
-  #            ("--mal %s " % (params.sens_alg)) +                             \
-  #            ("--phi /mnt/%s " % (phi)) +                                         \
-  #            ("--res /mnt/%s " % (recon)) +                                       \
-  #            ("--akp --mtx %d --ptt %d --dev %d " % (params.N, params.ptt,
-  #                                                    params.devnum)))
-  #                                                      
-  ## 5. Reference 6-min reconstruction.
-  #if not os.path.isfile("%s/ref_6min.npy" % (base)) and not isPatient and case=="testing":
-  #  print("~~~~~~~~> %s/ref_6min.npy" % base,flush=True)
-  #  os.system("docker run --gpus all " + \
-  #    ("-v /:/mnt/:z setsompop/recon -p ") +                                        \
-  #    ("--trj /mnt/%s " % (trj["6min"])) +                                         \
-  #    ("--ksp /mnt/%s/ksp_6min.npy " % (base)) +                                   \
-  #    ("--dcf /mnt/%s/../data/shared/dcf_6min.npy " % (dst)) +                        \
-  #    ("--mps /mnt/%s/mps_%s.npy " % (base, params.accel)) +                                   \
-  #    ("--mal %s " % (params.sens_alg)) +                                     \
-  #    ("--res /mnt/%s/ref_6min.npy " % (base)) +                                   \
-  #    ("--phi /mnt/%s " % (phi)) +                                                 \
-  #    ("--eig %f " % (eig["6min"])) +                                         \
-  #    ("--pdg 0 --blk 8 --lam 3e-5 --mit 40 ") +                              \
-  #    ("--akp --mtx %d --ptt %d --dev %d" % (params.N,
-  #                                            params.ptt,
-  #                                            params.devnum)))
-  #  
-  ## 4h. Reference 2-min reconstruction.
-  #recon = ("%s/ref_%s.npy" % (base, params.accel))
-  #if not os.path.isfile(recon):
-  #  print("~~~~~~~~> %s" % recon,flush=True)
-  #  os.system("docker run --gpus all " + \
-  #    ("-v /:/mnt/:z setsompop/recon -p ") +                                        \
-  #    ("--trj /mnt/%s " % (trj[params.accel])) +                                   \
-  #    ("--ksp /mnt/%s/ksp_%s.npy " % (base, params.accel)) +                       \
-  #    ("--dcf /mnt/%s/../data/shared/dcf_%s.npy " % (dst, params.accel)) +            \
-  #    ("--mps /mnt/%s/mps_%s.npy " % (base, params.accel)) +                                   \
-  #    ("--mal %s " % (params.sens_alg)) +                             \
-  #    ("--res /mnt/%s " % (recon)) +                                               \
-  #    ("--phi /mnt/%s " % (phi)) +                                                 \
-  #    ("--eig %f " % (eig[params.accel])) +                                   \
-  #    ("--pdg 0 --blk 8 --lam 5e-5 --mit 40 ") +                              \
-  #    ("--akp --mtx %d --ptt %d --dev %d" % (params.N,
-  #                                          params.ptt,
-  #                                          params.devnum)))
-#
-  #for num_iters in [4,6,8,10,12,15,20,25,30,35]:
-  #  recon = "%s/uninit_%s_iters_%d.npy" % (base, params.accel, num_iters)
-  #  if not os.path.isfile(recon) and not isPatient and case=="testing":
-  #    print("~~~~~~~~> %s" % recon)
-  #    os.system("docker run --gpus all "+\
-  #      ("-v /:/mnt/:z setsompop/recon -p ") +                                      \
-  #      ("--trj /mnt/%s " % (trj[params.accel])) +                                 \
-  #      ("--ksp /mnt/%s/ksp_%s.npy " % (base, params.accel)) +                     \
-  #      ("--dcf /mnt/%s/../data/shared/dcf_%s.npy " % (dst, params.accel)) +          \
-  #      ("--mps /mnt/%s/mps_%s.npy " % (base, params.accel)) +                                      \
-  #      ("--mal %s " % (params.sens_alg)) +                             \
-  #      ("--res /mnt/%s " % (recon)) +                                             \
-  #      ("--phi /mnt/%s " % (phi)) +                                               \
-  #      ("--eig %f " % (eig[params.accel])) +                                 \
-  #      ("--pdg 0 --blk 8 --lam 5e-5 --mit %d " % (num_iters)) +              \
-  #      ("--akp --mtx %d --ptt %d --dev %d" % (params.N,
-  #                                              params.ptt,
-  #                                              params.devnum)))
-#
+  # 2. Prepare reference k-space (6min for healthy volunteers and 2min for patients). - Apply coil compression and FOV shifting.
+  if not os.path.isfile("%s/ksp_6min.npy" % (base)) and not isPatient:
+    os.system("docker run --gpus all -v /:/mnt/:z setsompop/recon -a " +     \
+              ("--trj /mnt/%s " % (trj["6min"])) +                          \
+              ("--ksp /mnt/%s/raw_mrf.npy " % (base)) +                     \
+              ("--res /mnt/%s/tmp.npy " % (base)) +                         \
+              ("--phi /mnt/%s " % (phi)) +                                  \
+              ("--ccm /mnt/%s/ccm.npy " % (base)) +                         \
+              ("--shf /mnt/%s/shifts.npy " % (base)) +                      \
+              ("--svk /mnt/%s/ksp_6min.npy " % (base)) +                    \
+              ("--mal %s " % (params.sens_alg)) +                      \
+              ("--mtx %d --ptt %d --dev %d " % \
+                (params.N, params.ptt, params.devnum)))
+
+  if not os.path.isfile("%s/ksp_2min.npy" % (base)) and isPatient:
+    os.system("docker run --gpus all -v /:/mnt/:z setsompop/recon -a " +     \
+              ("--trj /mnt/%s " % (trj["2min"])) +                          \
+              ("--ksp /mnt/%s/raw_mrf.npy " % (base)) +                     \
+              ("--res /mnt/%s/tmp.npy " % (base)) +                         \
+              ("--phi /mnt/%s " % (phi)) +                                  \
+              ("--ccm /mnt/%s/ccm.npy " % (base)) +                         \
+              ("--shf /mnt/%s/shifts.npy " % (base)) +                      \
+              ("--svk /mnt/%s/ksp_2min.npy " % (base)) +                    \
+              ("--mal %s " % (params.sens_alg)) +                      \
+              ("--mtx %d --ptt %d --dev %d " % \
+                (params.N, params.ptt, params.devnum)))
+
+  if os.path.isfile("%s/tmp.npy" % (base)):
+    os.system("rm -f %s/tmp.npy" % (base))
+
+
+  # 3. Sub-sampling.
+  if params.accel == "2min" and not os.path.isfile("%s/ksp_2min.npy" % (base)) and not isPatient:
+    ksp = np.load("%s/ksp_6min.npy" % (base), mmap_mode="r")
+
+    ksp_a = ksp[:, :, 0:32:2, 0:500:2]
+    ksp_b = ksp[:, :, 1:32:2, 1:500:2]
+
+    ksp = np.zeros(list(ksp_a.shape[:-1]) + [ksp.shape[-1]], dtype=ksp.dtype)
+    ksp[..., 0:500:2] = ksp_a
+    ksp[..., 1:500:2] = ksp_b
+
+    np.save("%s/ksp_2min.npy" % (base), ksp)
+
+  # 4. Gridding reconstruction (2-min).
+  recon = ("%s/init_adj_%s.npy" % (base, params.accel))
+  if not os.path.isfile(recon):
+    print("~~~~~~~~> %s" % recon,flush=True)
+    os.system("docker run --gpus all  " + \
+              ("-v /:/mnt/:z setsompop/recon -a ") +                                \
+              ("--trj /mnt/%s " % (trj[params.accel])) +                           \
+              ("--ksp /mnt/%s/ksp_%s.npy " % (base, params.accel)) +               \
+              ("--dcf /mnt/%s/../data/shared/dcf_%s.npy " % (dst, params.accel)) +    \
+              ("--mps /mnt/%s/mps_%s.npy " % (base, params.accel)) +                           \
+              ("--mal %s " % (params.sens_alg)) +                             \
+              ("--phi /mnt/%s " % (phi)) +                                         \
+              ("--res /mnt/%s " % (recon)) +                                       \
+              ("--akp --mtx %d --ptt %d --dev %d " % (params.N, params.ptt,
+                                                      params.devnum)))
+                                                        
+  # 5. Reference 6-min reconstruction.
+  if not os.path.isfile("%s/ref_6min.npy" % (base)) and not isPatient and case=="testing":
+    print("~~~~~~~~> %s/ref_6min.npy" % base,flush=True)
+    os.system("docker run --gpus all " + \
+      ("-v /:/mnt/:z setsompop/recon -p ") +                                        \
+      ("--trj /mnt/%s " % (trj["6min"])) +                                         \
+      ("--ksp /mnt/%s/ksp_6min.npy " % (base)) +                                   \
+      ("--dcf /mnt/%s/../data/shared/dcf_6min.npy " % (dst)) +                        \
+      ("--mps /mnt/%s/mps_%s.npy " % (base, params.accel)) +                                   \
+      ("--mal %s " % (params.sens_alg)) +                                     \
+      ("--res /mnt/%s/ref_6min.npy " % (base)) +                                   \
+      ("--phi /mnt/%s " % (phi)) +                                                 \
+      ("--eig %f " % (eig["6min"])) +                                         \
+      ("--pdg 0 --blk 8 --lam 3e-5 --mit 40 ") +                              \
+      ("--akp --mtx %d --ptt %d --dev %d" % (params.N,
+                                              params.ptt,
+                                              params.devnum)))
+    
+  # 4h. Reference 2-min reconstruction.
+  recon = ("%s/ref_%s.npy" % (base, params.accel))
+  if not os.path.isfile(recon):
+    print("~~~~~~~~> %s" % recon,flush=True)
+    os.system("docker run --gpus all " + \
+      ("-v /:/mnt/:z setsompop/recon -p ") +                                        \
+      ("--trj /mnt/%s " % (trj[params.accel])) +                                   \
+      ("--ksp /mnt/%s/ksp_%s.npy " % (base, params.accel)) +                       \
+      ("--dcf /mnt/%s/../data/shared/dcf_%s.npy " % (dst, params.accel)) +            \
+      ("--mps /mnt/%s/mps_%s.npy " % (base, params.accel)) +                                   \
+      ("--mal %s " % (params.sens_alg)) +                             \
+      ("--res /mnt/%s " % (recon)) +                                               \
+      ("--phi /mnt/%s " % (phi)) +                                                 \
+      ("--eig %f " % (eig[params.accel])) +                                   \
+      ("--pdg 0 --blk 8 --lam 5e-5 --mit 40 ") +                              \
+      ("--akp --mtx %d --ptt %d --dev %d" % (params.N,
+                                            params.ptt,
+                                            params.devnum)))
+
+  for num_iters in [4,6,8,10,12,15,20,25,30,35]:
+    recon = "%s/uninit_%s_iters_%d.npy" % (base, params.accel, num_iters)
+    if not os.path.isfile(recon) and not isPatient and case=="testing":
+      print("~~~~~~~~> %s" % recon)
+      os.system("docker run --gpus all "+\
+        ("-v /:/mnt/:z setsompop/recon -p ") +                                      \
+        ("--trj /mnt/%s " % (trj[params.accel])) +                                 \
+        ("--ksp /mnt/%s/ksp_%s.npy " % (base, params.accel)) +                     \
+        ("--dcf /mnt/%s/../data/shared/dcf_%s.npy " % (dst, params.accel)) +          \
+        ("--mps /mnt/%s/mps_%s.npy " % (base, params.accel)) +                                      \
+        ("--mal %s " % (params.sens_alg)) +                             \
+        ("--res /mnt/%s " % (recon)) +                                             \
+        ("--phi /mnt/%s " % (phi)) +                                               \
+        ("--eig %f " % (eig[params.accel])) +                                 \
+        ("--pdg 0 --blk 8 --lam 5e-5 --mit %d " % (num_iters)) +              \
+        ("--akp --mtx %d --ptt %d --dev %d" % (params.N,
+                                                params.ptt,
+                                                params.devnum)))

@@ -6,11 +6,6 @@ conda:
 update:
 	conda env update --file environment.yaml --prune
 
-pip:
-	pip install git+https://github.com/mikgroup/sigpy.git@master
-	pip install pytorch-lightning
-	pip install git+https://gitlab.com/dvolgyes/zenodo_get
-
 data:
 	zenodo_get -d 10.5281/zenodo.7703200  # test data + dependencies only
 	mkdir -p data/testing/
