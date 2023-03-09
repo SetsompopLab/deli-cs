@@ -37,7 +37,7 @@ data+:
 		
 docker:
 	if [ ! -d "MRF" ] ; then  git clone https://github.com/SetsompopLab/MRF.git ; fi
-
+	git -C MRF checkout d480dbc 
 	$(MAKE) -C MRF/src/01_calib
 	$(MAKE) -C MRF/src/02_recon
 
