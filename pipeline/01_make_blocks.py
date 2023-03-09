@@ -7,9 +7,9 @@ import params
 
 np.random.seed(params.seed)
 
-lst_data =  [f"data/training/{f}" for f in os.listdir("../data/training")
+lst_data =  [f"../data/training/{f}" for f in os.listdir("../data/training")
              if os.path.isfile(f"../data/training/{f}/ref_{params.accel}.npy")]
-lst_data += [f"data/validation/{f}" for f in os.listdir("../data/validation")
+lst_data += [f"../data/validation/{f}" for f in os.listdir("../data/validation")
              if os.path.isfile(f"../data/validation/{f}/ref_{params.accel}.npy")]
 lst_data = list(set(lst_data))
 lst_data.sort()
@@ -30,7 +30,7 @@ block_index = 0
 for case in lst_data:
 
   print(("Case: %s" % (case)).capitalize(), flush=True)
-  base = case.split("/")[1]
+  base = case.split("/")[2]
   save = f"../data/{base}/blocks_{params.accel}"
 
   os.makedirs(save, exist_ok=True)
