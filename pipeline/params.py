@@ -19,7 +19,6 @@ seed = 0
 ## DL parameters
 augmentation_n = 16 # Number of augmentations.
 nn_block_size = 64           # Block size for training.
-nn_inf_block_size = 64       # Block size for inference.
 nn_kernel     = 3            # Convolution kernel size.
 nn_activation = "relu"       # Activation type.
 nn_loss       = "complex_l1" # Cost function.
@@ -30,3 +29,7 @@ opt_adam_lr          = 1e-5
 log_every_n_steps = 25
 dataloader_workers = 40
 dataloader_batch   = 1
+
+## DeliCS inference
+nn_inf_block_size = 64       # Block size for inference.
+overlap_fract = 1/4          # How much the blocks should overlap
