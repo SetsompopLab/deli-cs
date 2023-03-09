@@ -38,7 +38,7 @@ def writecfl(name, array):
 raw_path    =    '../data/training/case000/ksp_2min.npy'
 traj_path   =    '../data/shared/traj_grp16_inacc2.mat'
 phi_path    =    '../data/shared/phi.mat'
-recon_path  =    '../data/training/case000/bartrecon_2min.npy'
+recon_path  =    '../data/training/case000/bartrecon_2min'
 mps_path    =    '../data/training/case000/mps_2min.npy'
 
 cwd = os.getcwd()
