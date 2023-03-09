@@ -171,7 +171,7 @@ def main(args):
 
 def create_arg_parser():
 
-  parser = argparse.ArgumentParser(description="SMILR INIT")
+  parser = argparse.ArgumentParser(description="DELI-CS")
   parser.add_argument('--chk',  type=str, default=None, required=True,
                                 help="Load checkpoint")
 
