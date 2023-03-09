@@ -42,6 +42,7 @@ for dir in os.listdir('../data/testing'):
     if os.path.isfile(f'../data/testing/{dir}/raw_mrf.npy') and os.path.isfile(f'../data/testing/{dir}/raw_gre.npy'):
         N_test += 1
 print('Number of test cases:', N_test)
+norms = []
 
 for k in range(N_train+N_val+N_test):
   if k <= N_train-1:
@@ -193,3 +194,15 @@ for k in range(N_train+N_val+N_test):
         ("--akp --mtx %d --ptt %d --dev %d" % (params.N,
                                                 params.ptt,
                                                 params.devnum)))
+
+# 5. When all 10 training subjects are available calculate the average energy in the reference image to scale the deliCS input
+  recon = ("%s/ref_%s.npy" % (base, params.accel))
+  if os.path.isfile(recon) and case=="training" and N_train==10:
+    x = np.load(("%s/ref_%s.npy" % (base, params.accel)), mmap_mode="r")
+    norms.append(np.linalg.norm(x))
+    print(f'Norm for ref-2min for case: {case}/{idx} is: {norms[-1]}')
+
+if N_train==10:
+  val = np.mean(norms)
+  print(f"Estimated norm-scaling ({params.accel}):", val)
+  np.save(f"../data/shared/deli_scaling_{params.accel}.npy", val)
