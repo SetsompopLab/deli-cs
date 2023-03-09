@@ -138,8 +138,8 @@ def main(args):
   model.freeze()
   print("done.", flush=True)
   
-  lst_data = [f"../data/testing/{f}" for f in os.listdir("data/testing")
-               if os.path.isfile(f"data/testing/{f}/init_adj_{params.accel}..npy")]
+  lst_data = [f"../data/testing/{f}" for f in os.listdir("../data/testing")
+               if os.path.isfile(f"../data/testing/{f}/init_adj_{params.accel}..npy")]
   lst_data = list(set(lst_data))
   lst_data.sort()
 
