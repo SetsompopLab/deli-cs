@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+ #!/usr/bin/env python3
 
 import os
 import sys
@@ -21,9 +21,9 @@ import params
 import resunet
 
 
-class LitResUnet(pl.LightningModule):
+class LitResUNet(pl.LightningModule):
   """
-  ResUNet model inside a PyTorch Lightning module.
+ ResUNet model inside a PyTorch Lightning module.
   """
 
   def __init__(self, data_parallel=False):
@@ -66,7 +66,7 @@ class LitResUnet(pl.LightningModule):
     class tds(Dataset):
 
       def __init__(self):
-        base = f"data/training/blocks_{params.accel}"
+        base = f"../data/training/blocks_{params.accel}"
         self.locs = [("%s/%s" % (base, f)) for f in os.listdir(base)
                      if f.startswith("blk")]
 
@@ -82,7 +82,7 @@ class LitResUnet(pl.LightningModule):
     tds = tds()
 
     loader = DataLoader(dataset=tds, batch_size=params.dataloader_batch,
-                        num_workers=params.dataloader_workers, pin_memory=True,
+                        num_workers=params.dataloader_workers, pin_memory=False,
                         shuffle=True)
 
     return loader
@@ -93,7 +93,7 @@ class LitResUnet(pl.LightningModule):
     class tds(Dataset):
 
       def __init__(self):
-        base = f"data/validation/blocks_{params.accel}"
+        base = f"../data/validation/blocks_{params.accel}"
         self.locs = [("%s/%s" % (base, f)) for f in os.listdir(base)
                      if f.startswith("blk")]
 
@@ -109,7 +109,7 @@ class LitResUnet(pl.LightningModule):
     tds = tds()
 
     loader = DataLoader(dataset=tds, batch_size=params.dataloader_batch,
-                        num_workers=params.dataloader_workers, pin_memory=True)
+                        num_workers=params.dataloader_workers, pin_memory=False)
 
     return loader
 
@@ -153,7 +153,7 @@ class LitResUnet(pl.LightningModule):
     return metrics[f'Train/{params.nn_loss}']
 
 
-  def validation_step(self, batch):
+  def validation_step(self, batch, batch_idx):
 
     # Load batch of input-output pairs
     (src, ref) = batch
@@ -171,8 +171,6 @@ class LitResUnet(pl.LightningModule):
       params={"batch": params.dataloader_batch,
               "num_augmentations": params.augmentation_n,
               "nn_block_size": params.nn_block_size,
-              "nn_res_blocks": params.nn_res_blocks,
-              "nn_features": params.nn_features,
               "nn_kernel": params.nn_kernel,
               "nn_activation": params.nn_activation,
               "nn_loss": params.nn_loss,
@@ -186,18 +184,18 @@ class LitResUnet(pl.LightningModule):
 
 
   def configure_callbacks(self):
-    os.makedirs(f"checkpoints/case_{params.accel}to{params.target_accel}", exist_ok=True)
+    os.makedirs(f"../checkpoints/case_{params.accel}", exist_ok=True)
 
-    lst = os.listdir(f"checkpoints/case_{params.accel}to{params.target_accel}")
+    lst = os.listdir(f"../checkpoints/case_{params.accel}")
     if len(lst) == 0:
       loc = "version_%03d" % 0
     else:
       lst.sort()
       loc = "version_%03d" % (int(lst[-1].split("_")[-1]) + 1)
 
-    os.mkdir(f"checkpoints/case_{params.accel}to{params.target_accel}/{loc}")
+    os.mkdir(f"../checkpoints/case_{params.accel}/{loc}")
     checkpoint = ModelCheckpoint(
-      dirpath=f"checkpoints/case_{params.accel}{params.target_accel}/{loc}",
+      dirpath=f"../checkpoints/case_{params.accel}/{loc}",
       save_top_k=1,
       monitor=f'Validate/{params.nn_loss}',
       mode='min',
@@ -217,17 +215,17 @@ class LitResUnet(pl.LightningModule):
 def main(args):
 
   # Initialize unrolled model
-  model = LitResUnet() if args.chk is None else \
-          LitResUnet.load_from_checkpoint(args.chk)
+  model = LitResUNet() if args.chk is None else \
+          LitResUNet.load_from_checkpoint(args.chk)
 
   # Initialize logger (for writing summary to TensorBoard)
-  logger = TensorBoardLogger(save_dir="logs",
+  logger = TensorBoardLogger(save_dir="../logs",
                              name=f"case_{params.accel}",
                              default_hp_metric=False)
 
   # Initialize a trainer
   trainer = Trainer(accelerator='gpu', devices=params.devlst,
-                    default_root_dir="checkpoints",
+                    default_root_dir="../checkpoints",
                     logger=logger,
                     max_epochs=params.opt_epochs,
                     log_every_n_steps=params.log_every_n_steps,

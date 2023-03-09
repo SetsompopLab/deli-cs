@@ -1,3 +1,5 @@
+checkpoints
 data
+logs
 MRF
 **/__pycache__

@@ -20,7 +20,6 @@ seed = 0
 augmentation_n = 16 # Number of augmentations.
 nn_block_size = 64           # Block size for training.
 nn_inf_block_size = 64       # Block size for inference.
-nn_features   = 64           # Number of features in first layer.
 nn_kernel     = 3            # Convolution kernel size.
 nn_activation = "relu"       # Activation type.
 nn_loss       = "complex_l1" # Cost function.
