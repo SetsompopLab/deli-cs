@@ -25,6 +25,15 @@ dst = os.getcwd()
 for case in lst_data:
   base = ("%s/%s" % (dst, case))
 
+  # Scale initialization.
+  recon = "%s/deli_%s_scaled.npy" % (base, params.accel)
+  if not os.path.isfile(recon):
+    scaling = np.load(f"../data/shared/deli_scaling_{params.accel}.npy")
+    init = np.load("%s/deli_%s.npy" % (base, params.accel)).T
+    init = scaling * init/np.linalg.norm(init)
+    np.save(recon, init.T)
+
+
   for num_iters in [4,6,8,10,12,15,20,25,30,35]:
     recon = "%s/refine_%s_iters_%d.npy" % (base, params.accel, num_iters)
     if not os.path.isfile(recon):
@@ -34,7 +43,7 @@ for case in lst_data:
         ("--trj /mnt/%s " % (trj[params.accel])) +                                 \
         ("--ksp /mnt/%s/ksp_%s.npy " % (base, params.accel)) +                     \
         ("--dcf /mnt/%s/../data/shared/dcf_%s.npy " % (dst, params.accel)) +          \
-        ("--int /mnt/%s/deli_%s.npy " % (base, params.accel)) +                   \
+        ("--int /mnt/%s/deli_%s_scaled.npy " % (base, params.accel)) +                   \
         ("--mps /mnt/%s/mps_%s.npy " % (base,params.accel)) +                                      \
         ("--res /mnt/%s " % (recon)) +                                             \
         ("--phi /mnt/%s " % (phi)) +                                               \
@@ -53,6 +62,15 @@ dst = os.getcwd()
 for case in lst_data:
   base = ("%s/%s" % (dst, case))
 
+  # Scale initialization.
+  recon = "%s/deli_%s_scaled.npy" % (base, params.accel)
+  if not os.path.isfile(recon):
+    scaling = np.load(f"../data/shared/deli_scaling_{params.accel}.npy")
+    init = np.load("%s/deli_%s.npy" % (base, params.accel)).T
+    init = scaling * init/np.linalg.norm(init)
+    np.save(recon, init.T)
+
+
   for num_iters in [20,]:
     recon = "%s/refine_%s_iters_%d.npy" % (base, params.accel, num_iters)
     if not os.path.isfile(recon):
@@ -62,7 +80,7 @@ for case in lst_data:
         ("--trj /mnt/%s " % (trj[params.accel])) +                                 \
         ("--ksp /mnt/%s/ksp_%s.npy " % (base, params.accel)) +                     \
         ("--dcf /mnt/%s/../data/shared/dcf_%s.npy " % (dst, params.accel)) +          \
-        ("--int /mnt/%s/deli_%s.npy " % (base, params.accel)) +                   \
+        ("--int /mnt/%s/deli_%s_scaled.npy " % (base, params.accel)) +                   \
         ("--mps /mnt/%s/mps_%s.npy " % (base,params.accel)) +                                      \
         ("--res /mnt/%s " % (recon)) +                                             \
         ("--phi /mnt/%s " % (phi)) +                                               \
