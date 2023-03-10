@@ -32,6 +32,8 @@ folders where data is available. If the data has already been prepared it will n
 5. Perform reference LLR reconstruction of 6min data when available.
 6. Perform reference LLR reconstructions of 2min testing data with varying number of iterations for the test cases.
 
+The data preparation script also averages the energy in the 2-min reference reconstructions of the training subjects to use as a scaling factor for the deliCS initialization in the refinement step (if you don't download the training data (`data+`), this scaling factor is saved in the shared data folder already).
+
 Reconstruction parameters can be altered using the `pipeline/params.py` file.
 
 Note, since each subject is prepared serially, this step takes a very long time to complete for all training, validation, and test subjects. 
@@ -43,7 +45,7 @@ The training and validation data is further processed by ``pipeline/01_make_bloc
 To train DeliCS, run ``pipeline/02_train.py``. To view the progress you can use tensorboard using this command from the main deliCS directory: `tensorboard --logdir logs/case_2min`. This sets up a port that allows you to follow the training progress in your browser.
 
 ### Run DeliCS
-Once you have a trained network (either by running the pipeline with `data+` or using the provided checkpoints file: `checkpoints/case_2min/version_000/epoch=433-step=276024.ckpt`). The testing data is run through the network using `pipeline/03_deli.py`. This script takes an argument with the path to the file containing the weights. The way you would run it from the pipeline directory is thus: `python3 03_deli.py --chk ../checkpoints/case_2min/version_000/epoch=433-step=276024.ckp`.
+Once you have a trained network (either by running the pipeline with `data+` or using the provided checkpoints file: `checkpoints/case_2min/version_000/epoch=433-step=276024.ckpt`). The testing data is run through the network using `pipeline/03_deli.py`. This script takes an argument with the path to the file containing the weights. The way you would run it from the pipeline directory is thus: `python3 03_deli.py --chk ../checkpoints/case_2min/version_000/epoch=435-step=272064.ckpt`.
 
 The testing blocks differ from training blocks in that they are overlapping and combined using a linear cross-blending method that smooths out the overlapping regions.
 
