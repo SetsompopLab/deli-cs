@@ -47,12 +47,13 @@ def fit(x, dev, mat):
         mat = sp.to_device(mat, dev)
         x = sp.to_device(x, dev)
         
-        x     = xp.abs(mat.conj().T @ xp.reshape(x, (5, 256 * 256)))
+        x     = xp.abs(mat.conj().T @ xp.reshape(x, (5, 256)))
         lst_idx = sp.to_device(xp.argmax(x, axis=0), -1)
         
-        fit_T1  = np.reshape(np.array([T1[idx] for idx in lst_idx], dtype=np.float32), (256, 256))
-        fit_T2  = np.reshape(np.array([T2[idx] for idx in lst_idx], dtype=np.float32), (256, 256))
-    return (sp.to_device(fit_T1,-1), sp.to_device(fit_T2,-1))
+    fit_T1  = [T1[idx] for idx in lst_idx]
+    fit_T2  = [T2[idx] for idx in lst_idx]
+
+    return (fit_T1, fit_T2)
 
 
 
@@ -63,11 +64,11 @@ for case in lst_data:
     if os.path.isfile(recon) and not os.path.isfile("%s/T2_refine_%s_iters_%d.npy" % (base, params.accel, num_iters)):
       print("~~~~~~~~> %s" % recon)
       rec = np.load(recon,mmap_mode='r')
-      t1 = np.zeros((256,256,256))
-      t2 = np.zeros((256,256,256))
+      t1 = np.zeros((256,256,256),dtype=np.float32)
+      t2 = np.zeros((256,256,256),dtype=np.float32)
       for sl in range(256):
-        idx = [slice(None), slice(None, None, -1), sl]
-        t1[idx],t2[idx] = fit(rec[tuple(idx+[slice(None)])].T,  dev, mat)
+        for lin in range(256):
+          t1[lin,::-1,sl],t2[lin,::-1,sl] = fit(np.array(rec[lin,::-1,sl,:].T,dtype=np.complex64),  dev, np.array(mat.imag,dtype=np.float32))
       np.save("%s/T1_refine_%s_iters_%d.npy" % (base, params.accel, num_iters),t1)
       np.save("%s/T2_refine_%s_iters_%d.npy" % (base, params.accel, num_iters),t2)
     
@@ -75,11 +76,11 @@ for case in lst_data:
     if os.path.isfile(recon) and not os.path.isfile("%s/T2_uinit_%s_iters_%d.npy" % (base, params.accel, num_iters)):
       print("~~~~~~~~> %s" % recon)
       rec = np.load(recon,mmap_mode='r')
-      t1 = np.zeros((256,256,256))
-      t2 = np.zeros((256,256,256))
+      t1 = np.zeros((256,256,256),dtype=np.float32)
+      t2 = np.zeros((256,256,256),dtype=np.float32)
       for sl in range(256):
-        idx = [slice(None), slice(None, None, -1), sl]
-        t1[idx],t2[idx] = fit(rec[tuple(idx+[slice(None)])].T,  dev, mat)
+        for lin in range(256):
+          t1[lin,::-1,sl],t2[lin,::-1,sl] = fit(np.array(rec[lin,::-1,sl,:].T,dtype=np.complex64),  dev, np.array(mat.imag,dtype=np.float32))
       np.save("%s/T1_uinit_%s_iters_%d.npy" % (base, params.accel, num_iters),t1)
       np.save("%s/T2_uinit_%s_iters_%d.npy" % (base, params.accel, num_iters),t2)
     
@@ -87,11 +88,11 @@ for case in lst_data:
   if os.path.isfile(recon) and not os.path.isfile("%s/T2_ref_%s.npy" % (base, params.accel)):
     print("~~~~~~~~> %s" % recon)
     rec = np.load(recon,mmap_mode='r')
-    t1 = np.zeros((256,256,256))
-    t2 = np.zeros((256,256,256))
+    t1 = np.zeros((256,256,256),dtype=np.float32)
+    t2 = np.zeros((256,256,256),dtype=np.float32)
     for sl in range(256):
-      idx = [slice(None), slice(None, None, -1), sl]
-      t1[idx],t2[idx] = fit(rec[tuple(idx+[slice(None)])].T,  dev, mat)
+      for lin in range(256):
+        t1[lin,::-1,sl],t2[lin,::-1,sl] = fit(np.array(rec[lin,::-1,sl,:].T,dtype=np.complex64),  dev, np.array(mat.imag,dtype=np.float32))
     np.save("%s/T1_ref_%s.npy" % (base, params.accel),t1)
     np.save("%s/T2_ref_%s.npy" % (base, params.accel),t2)
 
@@ -99,11 +100,11 @@ for case in lst_data:
   if os.path.isfile(recon) and not os.path.isfile("%s/T2_ref_%s.npy" % (base, '6min')):
     print("~~~~~~~~> %s" % recon)
     rec = np.load(recon,mmap_mode='r')
-    t1 = np.zeros((256,256,256))
-    t2 = np.zeros((256,256,256))
+    t1 = np.zeros((256,256,256),dtype=np.float32)
+    t2 = np.zeros((256,256,256),dtype=np.float32)
     for sl in range(256):
-      idx = [slice(None), slice(None, None, -1), sl]
-      t1[idx],t2[idx] = fit(rec[tuple(idx+[slice(None)])].T,  dev, mat)
+      for lin in range(256):
+        t1[lin,::-1,sl],t2[lin,::-1,sl] = fit(np.array(rec[lin,::-1,sl,:].T,dtype=np.complex64),  dev, np.array(mat.imag,dtype=np.float32))
     np.save("%s/T1_ref_%s.npy" % (base, '6min'),t1)
     np.save("%s/T2_ref_%s.npy" % (base, '6min'),t2)
 
