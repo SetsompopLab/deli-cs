@@ -34,7 +34,7 @@ for case in lst_data:
     np.save(recon, init.T)
 
 
-  for num_iters in [4,6,8,10,12,15,20,25,30,35]:
+  for num_iters in [4,6,8,10,12,15,20,25,30,35,40]:
     recon = "%s/refine_%s_iters_%d.npy" % (base, params.accel, num_iters)
     if not os.path.isfile(recon):
       print("~~~~~~~~> %s" % recon)
