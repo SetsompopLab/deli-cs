@@ -10,7 +10,10 @@ Run the following commands in sequence to set up your environment to run the exp
 2. `make conda`
 3. `conda activate deliCS`
 4. `make pip`
-5. `make data` OR `make data+` (`data` downloads the shared data and testing data (~XXGB), `data+` downloads all training and validation data as well (extra ~50GB))
+5. `make data` OR `make data+` OR `make data++`
+    - `data` downloads and sets up the pre-processed data needed to regenerate the figures in the DeliCS paper. Total download size: 18GB
+    - `data+` downloads  and sets up `data` and the raw testing data and shared parameters that are needed to run the pipeline (which generates the data for the figures). Total download size: 18GB + 18GB = 36GB
+    - `data++` downloads and sets up `data+` and the raw training and validation data needed to re-train the DL component of deliCS. Total download size: 18GB + 18BG + 50GB = 86GB
 6. `make docker`
 
 _________________________
@@ -19,7 +22,7 @@ Note: the above steps require an Anaconda/Miniconda installation, Docker install
 _________________________
 
 ## Pipeline description.
-To run the DeliCS pipeline, please navigate to the `pipeline` directory with the `deliCS` conda environment activated. Then run: `python3 XX_script.py` with XX_script.py replaced with the actual script you want to run.
+To run the DeliCS pipeline, please navigate to the `pipeline` directory with the `deliCS` conda environment activated. Then run: `python3 XX_script.py` with XX_script.py replaced with the actual script you want to run. Note that you need to use `data+` or `data++` in the setup stage for the pipeline to run.
 
 ### Data preparation
 The data is prepped by ``pipeline/00_prepare.py``. It performs the following steps for all cases in the training, validation and testing
@@ -32,7 +35,7 @@ folders where data is available. If the data has already been prepared it will n
 5. Perform reference LLR reconstruction of 6min data when available.
 6. Perform reference LLR reconstructions of 2min testing data with varying number of iterations for the test cases.
 
-The data preparation script also averages the energy in the 2-min reference reconstructions of the training subjects to use as a scaling factor for the deliCS initialization in the refinement step (if you don't download the training data (`data+`), this scaling factor is saved in the shared data folder already).
+The data preparation script also averages the energy in the 2-min reference reconstructions of the training subjects to use as a scaling factor for the deliCS initialization in the refinement step (if you don't download the training data (`data++`), this scaling factor is saved in the shared data folder already).
 
 Reconstruction parameters can be altered using the `pipeline/params.py` file.
 
@@ -59,9 +62,10 @@ The refinement reconstruction uses the output of DeliCS as initialization of the
 For comparison, a script to run a BART reconstruction of one of the training datasets have also been included. `pipeline/recon_2min_bart.py` is not part of the deliCS pipeline, but it generates the reference data presented in the DeliCS paper. It uses the bart installation in the `setsompop/calib` docker container.
 
 ## Generate figures from manuscript
-
+In the `figures` directory there are multiple jupyter notebooks that can be used to re-generare the figures from the manuscript. They are numbered according to the figure number in the manuscript.
 
 ## Project structure overview
+This is the structure the whole project would take when using the `data++` option and running through the whole pipeline. Some files/folders won't exist when either a smaller dataset is used (`data` or `data+`) or before the pipeline is run as some files in the `shared` directory contain values that are calculated within the pipeline, for example the density compensation fuctions (`dcf...`).
 
 ```
 DeliCS
@@ -107,6 +111,7 @@ DeliCS
 |    |-- shared
 |    |    |-- dcf_2min.npy
 |    |    |-- dcf_6min.npy
+|    |    |-- deli_scaling_2min.mat
 |    |    |-- dictionary.mat
 |    |    |-- phi.mat
 |    |    |-- traj_grp16_inacc2.mat
@@ -152,7 +157,9 @@ DeliCS
 |    |-- params.py
 |    |-- recon_2min_bart.py
 |    |-- resunet.py
+|-- .gitignore
 |-- environment.yaml
+|-- LICENSE
 |-- Makefile
 |-- README.md
 ```

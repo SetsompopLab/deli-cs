@@ -7,26 +7,27 @@ update:
 	conda env update --file environment.yaml --prune
 
 data:
-	zenodo_get -d 10.5281/zenodo.7703200  # test data + dependencies only
-	mkdir -p data/testing/
-	mkdir -p data/shared/
+	zenodo_get -d 10.5281/zenodo.7734431
 	for case in 000 001 002 003 004; do
-		tar -xzvf teast_case${case}.tar.gz
+		tar -xzvf case${case}_preprocessed.tar.gz
 	done
-	tar -xzvf shared.tar.gz -C data/
+	tar -xzvf bartcompare.tar.gz
 
 data+:
-	zenodo_get -d 10.5281/zenodo.7703200 # test data + dependencies only
-	mkdir -p data/testing/
-	mkdir -p data/shared/
+	$(MAKE) data
+	zenodo_get -d 10.5281/zenodo.7703200 
 	for case in 000 001 002 003 004; do
 		tar -xzvf test_case${case}.tar.gz
 	done
-	tar -xzvf shared.tar.gz -C data/
+	tar -xzvf train_case000.tar.gz
+	tar -xzvf shared.tar.gz
+	tar -xzvf checkpoints.tar.gz
 
-	zenodo_get -d 10.5281/zenodo.7697373 # training and validation data
-	mkdir -p data/training/
-	mkdir -p data/validation/
+data++:
+	$(MAKE) data
+	$(MAKE) data+
+
+	zenodo_get -d 10.5281/zenodo.7697373
 	for case in 000 001 002 003 004 005 006 007 008 009; do
 		tar -xzvf train_case${case}.tar.gz
 	done
