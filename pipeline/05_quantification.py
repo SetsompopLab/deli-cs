@@ -59,7 +59,7 @@ def fit(x, dev, mat):
 
 for case in lst_data:
   base = ("%s/%s" % (dst, case))
-  for num_iters in [4,6,8,10,12,15,20,25,30,35]:
+  for num_iters in [4,6,8,10,12,15,20,25,30,35,40]:
     recon = "%s/refine_%s_iters_%d.npy" % (base, params.accel, num_iters)
     if os.path.isfile(recon) and not os.path.isfile("%s/T2_refine_%s_iters_%d.npy" % (base, params.accel, num_iters)):
       print("~~~~~~~~> %s" % recon)
@@ -68,7 +68,7 @@ for case in lst_data:
       t2 = np.zeros((256,256,256),dtype=np.float32)
       for sl in range(256):
         for lin in range(256):
-          t1[lin,::-1,sl],t2[lin,::-1,sl] = fit(np.array(rec[lin,::-1,sl,:].T,dtype=np.complex64),  dev, np.array(mat.imag,dtype=np.float32))
+          t1[lin,::-1,sl],t2[lin,::-1,sl] = fit(np.array(rec[lin,::-1,sl,:].T,dtype=np.complex64),  dev, mat)
       np.save("%s/T1_refine_%s_iters_%d.npy" % (base, params.accel, num_iters),t1)
       np.save("%s/T2_refine_%s_iters_%d.npy" % (base, params.accel, num_iters),t2)
     
@@ -80,7 +80,7 @@ for case in lst_data:
       t2 = np.zeros((256,256,256),dtype=np.float32)
       for sl in range(256):
         for lin in range(256):
-          t1[lin,::-1,sl],t2[lin,::-1,sl] = fit(np.array(rec[lin,::-1,sl,:].T,dtype=np.complex64),  dev, np.array(mat.imag,dtype=np.float32))
+          t1[lin,::-1,sl],t2[lin,::-1,sl] = fit(np.array(rec[lin,::-1,sl,:].T,dtype=np.complex64),  dev, mat)
       np.save("%s/T1_uinit_%s_iters_%d.npy" % (base, params.accel, num_iters),t1)
       np.save("%s/T2_uinit_%s_iters_%d.npy" % (base, params.accel, num_iters),t2)
     
@@ -92,7 +92,7 @@ for case in lst_data:
     t2 = np.zeros((256,256,256),dtype=np.float32)
     for sl in range(256):
       for lin in range(256):
-        t1[lin,::-1,sl],t2[lin,::-1,sl] = fit(np.array(rec[lin,::-1,sl,:].T,dtype=np.complex64),  dev, np.array(mat.imag,dtype=np.float32))
+        t1[lin,::-1,sl],t2[lin,::-1,sl] = fit(np.array(rec[lin,::-1,sl,:].T,dtype=np.complex64),  dev, mat)
     np.save("%s/T1_ref_%s.npy" % (base, params.accel),t1)
     np.save("%s/T2_ref_%s.npy" % (base, params.accel),t2)
 
@@ -104,7 +104,7 @@ for case in lst_data:
     t2 = np.zeros((256,256,256),dtype=np.float32)
     for sl in range(256):
       for lin in range(256):
-        t1[lin,::-1,sl],t2[lin,::-1,sl] = fit(np.array(rec[lin,::-1,sl,:].T,dtype=np.complex64),  dev, np.array(mat.imag,dtype=np.float32))
+        t1[lin,::-1,sl],t2[lin,::-1,sl] = fit(np.array(rec[lin,::-1,sl,:].T,dtype=np.complex64),  dev, mat)
     np.save("%s/T1_ref_%s.npy" % (base, '6min'),t1)
     np.save("%s/T2_ref_%s.npy" % (base, '6min'),t2)
 
