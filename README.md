@@ -9,12 +9,11 @@ Run the following commands in sequence to set up your environment to run the exp
 1. `conda update -n base -c defaults conda`
 2. `make conda`
 3. `conda activate deliCS`
-4. `make pip`
-5. `make data` OR `make data+` OR `make data++`
+4. `make data` OR `make data+` OR `make data++`
     - `data` downloads and sets up the pre-processed data needed to regenerate the figures in the DeliCS paper. Total download size: 18GB
     - `data+` downloads  and sets up `data` and the raw testing data and shared parameters that are needed to run the pipeline (which generates the data for the figures). Total download size: 18GB + 18GB = 36GB
     - `data++` downloads and sets up `data+` and the raw training and validation data needed to re-train the DL component of deliCS. Total download size: 18GB + 18BG + 50GB = 86GB
-6. `make docker`
+5. `make docker`
 
 _________________________
 
