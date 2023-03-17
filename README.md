@@ -149,9 +149,8 @@ DeliCS
 |    |-- 01_make_blocks.py
 |    |-- 02_train.py
 |    |-- 03_deli.py
-|    |-- 04_estimate_weights.py
-|    |-- 05_refinement.py
-|    |-- 06_quantification.py
+|    |-- 04_refinement.py
+|    |-- 05_quantification.py
 |    |-- metrics.py
 |    |-- params.py
 |    |-- recon_2min_bart.py
