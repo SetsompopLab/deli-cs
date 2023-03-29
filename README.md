@@ -1,5 +1,5 @@
 # Deli-CS
-This repository contains the code needed to reproduce and explore the results presented in <i>Deep Learning Initialized Compressed Sensing (Deli-CS) in Volumetric Spatio-Temporal Subspace Reconstruction</i> available on: TBC
+This repository contains the code needed to reproduce and explore the results presented in <i>Deep Learning Initialized Compressed Sensing (Deli-CS) in Volumetric Spatio-Temporal Subspace Reconstruction</i> available on: https://www.biorxiv.org/content/10.1101/2023.03.28.534431v1
 
 
 ## Installation.
